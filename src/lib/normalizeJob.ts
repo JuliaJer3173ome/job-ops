@@ -63,7 +63,8 @@ function normalizeSalary(
   const matches = str.replace(/,/g, "").match(/(\d+(?:\.\d+)?)/g);
   const numbers = matches ? matches.map(Number) : [];
   // Also handle "k" shorthand e.g. "30k - 50k" — TODO: add this parsing later
-  const currency = str.includes("$") ? "USD" : str.includes("€") ? "EUR" : "GBP";
+  // Note: added "¥" check for JPY since I sometimes browse Japanese job boards
+  const currency = str.includes("$") ? "USD" : str.includes("€") ? "EUR" : str.includes("¥") ? "JPY" : "GBP";
 
   return {
     min: numbers[0] ?? null,
@@ -110,7 +111,7 @@ export function normalizeJob(raw: RawJob): NormalizedJob {
     id: String(raw.id ?? crypto.randomUUID()),
     title: (raw.title ?? "Untitled Position").trim(),
     company: (raw.company ?? "Unknown Company").trim(),
-    location: (raw.location ?? "Not specified").trim(),
+    location: (raw.location ?? "Location Not Specified").trim(),
     remote: normalizeRemote(raw.remote),
     salary: normalizeSalary(raw.salary),
     description: (raw.description ?? "").trim(),
