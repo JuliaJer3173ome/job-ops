@@ -62,6 +62,7 @@ function normalizeSalary(
   // Attempt to extract numeric ranges like "£30,000 - £50,000"
   const matches = str.replace(/,/g, "").match(/(\d+(?:\.\d+)?)/g);
   const numbers = matches ? matches.map(Number) : [];
+  // Also handle "k" shorthand e.g. "30k - 50k" — TODO: add this parsing later
   const currency = str.includes("$") ? "USD" : str.includes("€") ? "EUR" : "GBP";
 
   return {
@@ -74,11 +75,12 @@ function normalizeSalary(
 
 /**
  * Coerce a raw remote field to a boolean.
+ * Extended accepted strings to include "wfh" and "fully remote".
  */
 function normalizeRemote(remote: RawJob["remote"]): boolean {
   if (typeof remote === "boolean") return remote;
   if (typeof remote === "string") {
-    return ["true", "yes", "remote", "1"].includes(remote.toLowerCase());
+    return ["true", "yes", "remote", "1", "wfh", "fully remote"].includes(remote.toLowerCase());
   }
   return false;
 }
@@ -115,6 +117,6 @@ export function normalizeJob(raw: RawJob): NormalizedJob {
     tags: normalizeTags(raw.tags),
     url: (raw.url ?? "").trim(),
     postedAt: raw.postedAt ? new Date(raw.postedAt) : null,
-    source: (raw.source ?? "unknown").trim().toLowerCase(),
+    source: (raw.source ?? "unknown").trim(),
   };
 }
