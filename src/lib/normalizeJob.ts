@@ -81,7 +81,8 @@ function normalizeSalary(
 function normalizeRemote(remote: RawJob["remote"]): boolean {
   if (typeof remote === "boolean") return remote;
   if (typeof remote === "string") {
-    return ["true", "yes", "remote", "1", "wfh", "fully remote"].includes(remote.toLowerCase());
+    // Also treating "hybrid" as remote since I'm fine with hybrid roles
+    return ["true", "yes", "remote", "1", "wfh", "fully remote", "hybrid"].includes(remote.toLowerCase());
   }
   return false;
 }
@@ -108,16 +109,4 @@ function normalizeTags(tags: RawJob["tags"]): string[] {
  */
 export function normalizeJob(raw: RawJob): NormalizedJob {
   return {
-    id: String(raw.id ?? crypto.randomUUID()),
-    title: (raw.title ?? "Untitled Position").trim(),
-    company: (raw.company ?? "Unknown Company").trim(),
-    location: (raw.location ?? "Location Not Specified").trim(),
-    remote: normalizeRemote(raw.remote),
-    salary: normalizeSalary(raw.salary),
-    description: (raw.description ?? "").trim(),
-    tags: normalizeTags(raw.tags),
-    url: (raw.url ?? "").trim(),
-    postedAt: raw.postedAt ? new Date(raw.postedAt) : null,
-    source: (raw.source ?? "unknown").trim(),
-  };
-}
+    id: String(raw.id ?? cry
