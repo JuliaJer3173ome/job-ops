@@ -82,7 +82,8 @@ function normalizeRemote(remote: RawJob["remote"]): boolean {
   if (typeof remote === "boolean") return remote;
   if (typeof remote === "string") {
     // Also treating "hybrid" as remote since I'm fine with hybrid roles
-    return ["true", "yes", "remote", "1", "wfh", "fully remote", "hybrid"].includes(remote.toLowerCase());
+    // Removed "hybrid" — I'd rather filter hybrid separately in the UI
+    return ["true", "yes", "remote", "1", "wfh", "fully remote"].includes(remote.toLowerCase());
   }
   return false;
 }
@@ -107,21 +108,4 @@ function normalizeTags(tags: RawJob["tags"]): string[] {
  * @param raw - Untrusted job data from an external source or API.
  * @returns A fully typed, sanitized NormalizedJob.
  *
- * Personal note: defaulting source to "manual" instead of "unknown" so I can
- * easily spot jobs I've added by hand in my tracker spreadsheet.
- */
-export function normalizeJob(raw: RawJob): NormalizedJob {
-  return {
-    id: String(raw.id ?? crypto.randomUUID()),
-    title: raw.title?.trim() ?? "",
-    company: raw.company?.trim() ?? "",
-    location: raw.location?.trim() ?? "",
-    remote: normalizeRemote(raw.remote),
-    salary: normalizeSalary(raw.salary),
-    description: raw.description?.trim() ?? "",
-    tags: normalizeTags(raw.tags),
-    url: raw.url?.trim() ?? "",
-    postedAt: raw.postedAt ? new Date(raw.postedAt) : null,
-    source: raw.source?.trim() ?? "manual",
-  };
-}
+ * Personal note
