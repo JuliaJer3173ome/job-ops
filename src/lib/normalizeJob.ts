@@ -106,6 +106,20 @@ function normalizeTags(tags: RawJob["tags"]): string[] {
  * Normalize a raw job object into the canonical NormalizedJob shape.
  *
  * @param raw - Untrusted job data from an external source or API.
- * @returns A fully typed, sanitized NormalizedJob.
- *
- * Personal note
+ * @returns A fully-shaped NormalizedJob with safe defaults for all fields.
+ */
+export function normalizeJob(raw: RawJob): NormalizedJob {
+  return {
+    id: String(raw.id ?? crypto.randomUUID()),
+    title: raw.title?.trim() ?? "Untitled",
+    company: raw.company?.trim() ?? "Unknown Company",
+    location: raw.location?.trim() ?? "Unknown Location",
+    remote: normalizeRemote(raw.remote),
+    salary: normalizeSalary(raw.salary),
+    description: raw.description?.trim() ?? "",
+    tags: normalizeTags(raw.tags),
+    url: raw.url?.trim() ?? "",
+    postedAt: raw.postedAt ? new Date(raw.postedAt) : null,
+    source: raw.source?.trim() ?? "unknown",
+  };
+}
