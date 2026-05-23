@@ -60,9 +60,10 @@ function normalizeSalary(
 
   const str = String(raw).trim();
   // Attempt to extract numeric ranges like "£30,000 - £50,000"
-  const matches = str.replace(/,/g, "").match(/(\d+(?:\.\d+)?)/g);
+  // Also handles "k" shorthand e.g. "30k - 50k" by multiplying by 1000
+  const normalizedStr = str.replace(/([\d.]+)k/gi, (_, n) => String(parseFloat(n) * 1000));
+  const matches = normalizedStr.replace(/,/g, "").match(/(\d+(?:\.\d+)?)/g);
   const numbers = matches ? matches.map(Number) : [];
-  // Also handle "k" shorthand e.g. "30k - 50k" — TODO: add this parsing later
   // Note: added "¥" check for JPY since I sometimes browse Japanese job boards
   const currency = str.includes("$") ? "USD" : str.includes("€") ? "EUR" : str.includes("¥") ? "JPY" : "GBP";
 
@@ -106,20 +107,4 @@ function normalizeTags(tags: RawJob["tags"]): string[] {
  * Normalize a raw job object into the canonical NormalizedJob shape.
  *
  * @param raw - Untrusted job data from an external source or API.
- * @returns A fully-shaped NormalizedJob with safe defaults for all fields.
- */
-export function normalizeJob(raw: RawJob): NormalizedJob {
-  return {
-    id: String(raw.id ?? crypto.randomUUID()),
-    title: raw.title?.trim() ?? "Untitled",
-    company: raw.company?.trim() ?? "Unknown Company",
-    location: raw.location?.trim() ?? "Unknown Location",
-    remote: normalizeRemote(raw.remote),
-    salary: normalizeSalary(raw.salary),
-    description: raw.description?.trim() ?? "",
-    tags: normalizeTags(raw.tags),
-    url: raw.url?.trim() ?? "",
-    postedAt: raw.postedAt ? new Date(raw.postedAt) : null,
-    source: raw.source?.trim() ?? "unknown",
-  };
-}
+ * @retur
