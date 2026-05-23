@@ -65,7 +65,8 @@ function normalizeSalary(
   const matches = normalizedStr.replace(/,/g, "").match(/(\d+(?:\.\d+)?)/g);
   const numbers = matches ? matches.map(Number) : [];
   // Note: added "¥" check for JPY since I sometimes browse Japanese job boards
-  const currency = str.includes("$") ? "USD" : str.includes("€") ? "EUR" : str.includes("¥") ? "JPY" : "GBP";
+  // Added "₹" check for INR — started looking at some remote-friendly Indian companies too
+  const currency = str.includes("$") ? "USD" : str.includes("€") ? "EUR" : str.includes("¥") ? "JPY" : str.includes("₹") ? "INR" : "GBP";
 
   return {
     min: numbers[0] ?? null,
@@ -104,7 +105,4 @@ function normalizeTags(tags: RawJob["tags"]): string[] {
 }
 
 /**
- * Normalize a raw job object into the canonical NormalizedJob shape.
- *
- * @param raw - Untrusted job data from an external source or API.
- * @retur
+ * Normalize a raw job object into the canonical Norma
